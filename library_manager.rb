@@ -1,5 +1,5 @@
 class LibraryManager
-
+ require 'active_support/all' 
   # 1. Бибилиотека в один момент решила ввести жесткую систему штрафов (прямо как на rubybursa :D).
   # За каждый час опоздания со здачей книги читатель вынужден заплатить пеню 0,1% от стоимости.  
   # Необходимо реализовать метод, который будет считать эту сумму в зависимости от даты выдачи и 
@@ -11,11 +11,9 @@ class LibraryManager
   # - дата и время возврата (момент, когда книга должна была быть сдана, в формате DateTime)
   # Возвращаемое значение 
   # - пеня в центах
-  def penalty price, issue_datetime
+  def penalty(price, issue_datetime)
     # решение пишем тут
-
-
-
+    (((Time.now - issue_datetime) / 1.hours)  * (price / 1000.0)).round 
   end
 
   # 2. Известны годы жизни двух писателей. Год рождения, год смерти. Посчитать, могли ли они чисто 
@@ -32,9 +30,22 @@ class LibraryManager
   # - true или false
   def could_meet_each_other? year_of_birth_first, year_of_death_first, year_of_birth_second, year_of_death_second
     # решение пишем тут
+    # буду использовать массивы
+    # вычислю продолжительность жизни авторов
+    
+    life_first = year_of_death_first - year_of_birth_first
+    life_second = year_of_death_second - year_of_birth_second
+    
+    # формирую массывы жизни для каждого из автров
+    time_first = Array.new(life_first){ |index| year_of_birth_first + index + 1 }
+    time_secon = Array.new(life_second){ |index| year_of_birth_second + index + 1 }
 
-
-
+      if (time_first & time_secon).size > 0
+       return true
+      else
+       return false
+      end 
+    
   end
 
   # 3. Исходя из жесткой системы штрафов за опоздания со cдачей книг, читатели начали задумываться - а 
@@ -47,10 +58,19 @@ class LibraryManager
   # - число полных дней, нак которые необходимо опоздать со здачей, чтобы пеня была равна стоимости книги.
   def days_to_buy price
     # решение пишем тут
+    # вычисляем пеню книги за 1 день
+    penalty_day = 24 * (price / 1000.0)
 
+    i = 0
+    current_day = 0
+    while current_day < price
 
-
-
+      i += 1
+      current_day = penalty_day * i
+     
+    end
+  
+    return i 
   end
 
 
@@ -64,7 +84,32 @@ class LibraryManager
   # - имя и фамилия автора транслитом. ("Ivan Franko")
   def author_translit ukr_name
     # решение пишем тут
+replace = {
 
+        'а' => 'a',   'б' => 'b',   'в' => 'v',
+        'г' => 'h',   'д' => 'd',   'е' => 'e',   'є' => 'ie',
+        'ж' => 'zh',  'з' => 'z',   'і' => 'i',
+        'и' => 'y',   'й' => 'i',   'к' => 'k',   'ї' => 'i',
+        'л' => 'l',   'м' => 'm',   'н' => 'n',   'ґ' => 'g',
+        'о' => 'o',   'п' => 'p',   'р' => 'r',
+        'с' => 's',   'т' => 't',   'у' => 'u',
+        'ф' => 'f',   'х' => 'kh',  'ц' => 'ts',
+        'ч' => 'ch',  'ш' => 'sh',  'щ' => 'shch',
+        'ю' => 'iu',  'я' => 'ia',
+
+        'А' => 'A',   'Б' => 'B',   'В' => 'V',
+        'Г' => 'H',   'Д' => 'D',   'Е' => 'E',   'Є' => 'Ye',
+        'Ж' => 'Zh',  'З' => 'Z',   'І' => 'I',
+        'И' => 'Y',   'Й' => 'Y',   'К' => 'K',   'Ї' => 'Yi',
+        'Л' => 'L',   'М' => 'M',   'Н' => 'N',   'Ґ' => 'G',
+        'О' => 'O',   'П' => 'P',   'Р' => 'R',
+        'С' => 'S',   'Т' => 'T',   'У' => 'U',
+        'Ф' => 'F',   'Х' => 'Kh',  'Ц' => 'Ts',
+        'Ч' => 'Ch',  'Ш' => 'Sh',  'Щ' => 'Shch',
+        'Ю' => 'Yu',  'Я' => 'Ya', ' ' => ' '
+    }
+
+   ukr_name.gsub(/#{replace.keys}/, replace)
 
 
   end
