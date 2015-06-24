@@ -71,7 +71,7 @@ class LibraryManager
         'С' => 'S',   'Т' => 'T',   'У' => 'U',
         'Ф' => 'F',   'Х' => 'Kh',  'Ц' => 'Ts',
         'Ч' => 'Ch',  'Ш' => 'Sh',  'Щ' => 'Shch',
-        'Ю' => 'Yu',  'Я' => 'Ya', ' ' => ' '
+        'Ю' => 'Yu',  'Я' => 'Ya', ' ' => ' ', '’' => ''
     }
 
    ukr_name.gsub(/#{replace.keys}/, replace)
