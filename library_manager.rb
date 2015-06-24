@@ -26,7 +26,7 @@ class LibraryManager
   # - true или false
   def could_meet_each_other? year_of_birth_first, year_of_death_first, year_of_birth_second, year_of_death_second
     # решение пишем тут
-    (year_of_birth_first..year_of_death_first).grep(year_of_birth_second..year_of_death_second).length > 0 ? true :false
+    (year_of_birth_first..year_of_death_first).grep(year_of_birth_second..year_of_death_second).length > 0 ? true : false
 
   end
 
