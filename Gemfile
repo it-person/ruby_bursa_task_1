@@ -2,4 +2,5 @@ source 'https://rubygems.org'
 
 gem 'rspec'
 gem 'activesupport'
-gem 'pry'
+gem 'byebug'
+gem 'pry-byebug'
