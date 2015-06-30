@@ -1,4 +1,8 @@
+
 class LibraryManager
+  require "date"
+  FINE_RATE = 0.1      #Размер пени в процентах
+  FINE = FINE_RATE/100
 
   # 1. Бибилиотека в один момент решила ввести жесткую систему штрафов (прямо как на rubybursa :D).
   # За каждый час опоздания со здачей книги читатель вынужден заплатить пеню 0,1% от стоимости.  
@@ -12,10 +16,8 @@ class LibraryManager
   # Возвращаемое значение 
   # - пеня в центах
   def penalty price, issue_datetime
-    # решение пишем тут
-
-
-
+    res = (price * FINE * (DateTime.now.new_offset(0) - issue_datetime)*24).round
+    res > 0 ? res : 0
   end
 
   # 2. Известны годы жизни двух писателей. Год рождения, год смерти. Посчитать, могли ли они чисто 
@@ -31,10 +33,7 @@ class LibraryManager
   # Возвращаемое значение 
   # - true или false
   def could_meet_each_other? year_of_birth_first, year_of_death_first, year_of_birth_second, year_of_death_second
-    # решение пишем тут
-
-
-
+    year_of_birth_first > year_of_birth_second ? ( year_of_birth_first <  year_of_death_second) : ( year_of_birth_second < year_of_death_first )
   end
 
   # 3. Исходя из жесткой системы штрафов за опоздания со cдачей книг, читатели начали задумываться - а 
@@ -46,11 +45,7 @@ class LibraryManager
   # Возвращаемое значение 
   # - число полных дней, нак которые необходимо опоздать со здачей, чтобы пеня была равна стоимости книги.
   def days_to_buy price
-    # решение пишем тут
-
-
-
-
+    (1/FINE/24).ceil
   end
 
 
@@ -63,10 +58,27 @@ class LibraryManager
   # Возвращаемое значение 
   # - имя и фамилия автора транслитом. ("Ivan Franko")
   def author_translit ukr_name
-    # решение пишем тут
-
-
-
+    tab = { 'А'=>'A','а'=>'a','Б'=>'B','б'=>'b','В'=>'V','в'=>'v','Г'=>'H','г'=>'h',
+            'Ґ'=>'G','ґ'=>'g','Д'=>'D','д'=>'d','Е'=>'E','е'=>'e','Є'=>'Ye','є'=>'ie',
+            'Ж'=>'Zh','ж'=>'zh','З'=>'Z','з'=>'z','И'=>'Y','и'=>'y','І'=>'I','і'=>'i',
+            'Ї'=>'Yi','ї'=>'i','Й'=>'Y','й'=>'i','К'=>'K','к'=>'k','Л'=>'L','л'=>'l',
+            'М'=>'M','м'=>'m','Н'=>'N','н'=>'n','О'=>'O','о'=>'o','П'=>'P','п'=>'p',
+            'Р'=>'R','р'=>'r','С'=>'S','с'=>'s','Т'=>'T','т'=>'t','У'=>'U','у'=>'u',
+            'Ф'=>'F','ф'=>'f','Х'=>'Kh','х'=>'kh','Ц'=>'Ts','ц'=>'ts','Ч'=>'Ch','ч'=>'ch',
+            'Ш'=>'Sh','ш'=>'sh','Щ'=>'Shch','щ'=>'shch','Ю'=>'Yu','ю'=>'iu','Я'=>'Ya',
+            'я'=>'ia', '’'=>'','ь'=>''}
+    res = ''
+#    ukr_name.each_char {|c| res += (tab.has_key?(c) ? tab[c] : c)}
+    prev = ''
+    ukr_name.each_char do |c|
+      if (prev == 'З' || prev == 'з') && (c == 'г') then
+        res += 'gh'
+      else
+        res += (tab.has_key?(c) ? tab[c] : c)
+      end
+      prev = c
+    end
+    res
   end
 
   #5. Читатели любят дочитывать книги во что-бы то ни стало. Необходимо помочь им просчитать сумму штрафа, 
@@ -82,9 +94,9 @@ class LibraryManager
   # Возвращаемое значение 
   # - Пеня в центах или 0 при условии что читатель укладывается в срок здачи.
   def penalty_to_finish price, issue_datetime, pages_quantity, current_page, reading_speed
-    # решение пишем тут
-
-
+    exp = DateTime.now.new_offset(0) + (pages_quantity - current_page).to_f / reading_speed / 24
+    res = (price * FINE * (exp - issue_datetime)*24)
+    res > 0 ? res.round : 0
   end
 
 end
