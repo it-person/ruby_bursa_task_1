@@ -1,5 +1,6 @@
 class LibraryManager
-
+require 'date'
+require 'active_support/all'
   # 1. Бибилиотека в один момент решила ввести жесткую систему штрафов (прямо как на rubybursa :D).
   # За каждый час опоздания со здачей книги читатель вынужден заплатить пеню 0,1% от стоимости.  
   # Необходимо реализовать метод, который будет считать эту сумму в зависимости от даты выдачи и 
@@ -11,11 +12,11 @@ class LibraryManager
   # - дата и время возврата (момент, когда книга должна была быть сдана, в формате DateTime)
   # Возвращаемое значение 
   # - пеня в центах
-  def penalty price, issue_datetime
-    # решение пишем тут
 
-
-
+  def penalty(price, issue_datetime)
+    date_diff = (Time.now - issue_datetime)
+    return 0 if date_diff < 0 || price < 0
+    ((date_diff / 1.hours)  * (price * 0.001)).round 
   end
 
   # 2. Известны годы жизни двух писателей. Год рождения, год смерти. Посчитать, могли ли они чисто 
@@ -31,11 +32,11 @@ class LibraryManager
   # Возвращаемое значение 
   # - true или false
   def could_meet_each_other? year_of_birth_first, year_of_death_first, year_of_birth_second, year_of_death_second
-    # решение пишем тут
-
-
-
+     first = (year_of_birth_first..year_of_death_first).to_a
+     second = (year_of_birth_second..year_of_death_second).to_a
+     (first & second).length > 0
   end
+
 
   # 3. Исходя из жесткой системы штрафов за опоздания со cдачей книг, читатели начали задумываться - а 
   # не дешевле ли будет просто купить такую же книгу...  Необходимо помочь читателям это выяснить. За каждый 
@@ -46,28 +47,49 @@ class LibraryManager
   # Возвращаемое значение 
   # - число полных дней, нак которые необходимо опоздать со здачей, чтобы пеня была равна стоимости книги.
   def days_to_buy price
-    # решение пишем тут
-
-
-
-
+    ((price / (price * 0.001)) / 24).round 
   end
+
 
 
   # 4. Для удобства иностранных пользователей, имена авторов книг на украинском языке нужно переводить в 
   # транслит. Транслитерацию должна выполняться согласно официальным 
-  # правилам http://kyivpassport.com/transliteratio/
+  # правилам http://kyivpassport.com/transliteratio/ (strtime%seconds)
   
   # Входящий параметр метода 
   # - имя и фамилия автора на украинском. ("Іван Франко") 
   # Возвращаемое значение 
   # - имя и фамилия автора транслитом. ("Ivan Franko")
+
   def author_translit ukr_name
-    # решение пишем тут
+    name = ukr_name.split[0]
+    surname = ukr_name.split[1]
+    letters = {
+        "а" => "a",   "б" => "b",   "в" => "v",
+        "г" => "h",   "д" => "d",   "е" => "e",   "є" => "ie",
+        "ж" => "zh",  "з" => "z",   "і" => "i",
+        "и" => "y",   "й" => "i",   "к" => "k",   "ї" => "i",
+        "л" => "l",   "м" => "m",   "н" => "n",   "ґ" => "g",
+        "о" => "o",   "п" => "p",   "р" => "r",
+        "с" => "s",   "т" => "t",   "у" => "u",
+        "ф" => "f",   "х" => "kh",  "ц" => "ts",
+        "ч" => "ch",  "ш" => "sh",  "щ" => "shch",
+        "ю" => "iu",  "я" => "ia",
 
+        "А" => "A",   "Б" => "B",   "В" => "V",
+        "Г" => "H",   "Д" => "D",   "Е" => "E",   "Є" => "Ye",
+        "Ж" => "Zh",  "З" => "Z",   "І" => "I",
+        "И" => "Y",   "Й" => "Y",   "К" => "K",   "Ї" => "Yi",
+        "Л" => "L",   "М" => "M",   "Н" => "N",   "Ґ" => "G",
+        "О" => "O",   "П" => "P",   "Р" => "R",
+        "С" => "S",   "Т" => "T",   "У" => "U",
+        "Ф" => "F",   "Х" => "Kh",  "Ц" => "Ts",
+        "Ч" => "Ch",  "Ш" => "Sh",  "Щ" => "Shch",
+        "Ю" => "Yu",  "Я" => "Ya",
+    }
 
-
-  end
+    name.gsub(/#{letters.keys}/, letters) + ' ' + surname.gsub(/#{letters.keys}/, letters)
+    end
 
   #5. Читатели любят дочитывать книги во что-бы то ни стало. Необходимо помочь им просчитать сумму штрафа, 
   # который придеться заплатить чтобы дочитать книгу, исходя из количества страниц, текущей страницы и 
@@ -82,9 +104,10 @@ class LibraryManager
   # Возвращаемое значение 
   # - Пеня в центах или 0 при условии что читатель укладывается в срок здачи.
   def penalty_to_finish price, issue_datetime, pages_quantity, current_page, reading_speed
-    # решение пишем тут
-
-
+    time_now = DateTime.now.new_offset(0)
+    time_till_read = ((pages_quantity - current_page) / reading_speed)
+    fin_time = time_now + time_till_read.hours
+    res = fin_time > issue_datetime ? price * 0.001 * ((fin_time - issue_datetime).to_f * 24).round : 0
+    return res.round
   end
-
 end
